@@ -1,0 +1,34 @@
+---
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSSubscription
+metadata:
+  annotations:
+    openshift.io/display-name: demo
+  name: demo
+  namespace: models-as-a-service
+spec:
+  modelRefs:
+    - name: gemma-4-31b-it-nvfp4
+      namespace: model-server
+      tokenRateLimits:
+        - limit: 10000
+          window: 1m
+  owner:
+    groups:
+      - name: 'system:authenticated'
+  priority: 0
+---
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSAuthPolicy
+metadata:
+  annotations:
+    openshift.io/description: Auth policy created for subscription "demo"
+  name: demo-policy
+  namespace: models-as-a-service
+spec:
+  modelRefs:
+    - name: gemma-4-31b-it-nvfp4
+      namespace: model-server
+  subjects:
+    groups:
+      - name: 'system:authenticated'

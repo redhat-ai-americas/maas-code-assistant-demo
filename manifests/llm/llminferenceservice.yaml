@@ -1,0 +1,84 @@
+---
+apiVersion: serving.kserve.io/v1alpha2
+kind: LLMInferenceService
+metadata:
+  annotations:
+    opendatahub.io/connections: gemma-4-31b-it-nvfp4
+    opendatahub.io/model-type: generative
+    openshift.io/display-name: gemma-4-31b-it-nvfp4
+    serving.kserve.io/stop: 'false'
+  labels:
+    opendatahub.io/dashboard: 'true'
+  name: gemma-4-31b-it-nvfp4
+  namespace: model-server
+spec:
+  model:
+    name: gemma-4-31b-it-nvfp4
+    uri: 'oci://quay.io/redhat-ai-services/modelcar-catalog:gemma-4-31b-it-nvfp4'
+  replicas: 1
+  router:
+    gateway:
+      refs:
+        - name: maas-default-gateway
+          namespace: openshift-ingress
+    route: {}
+    scheduler: {}
+  template:
+    containers:
+      - args:
+          - '--max-model-len 200000'
+          - '--enable-auto-tool-choice'
+          - '--tool-call-parser gemma4'
+          - '--reasoning-parser gemma4'
+          - '--chat-template /opt/app-root/template/tool_chat_template_gemma4.jinja'
+        image: 'registry.redhat.io/rhaii-early-access/vllm-cuda-rhel9:3.5.0-ea.2-1782953356'
+        name: main
+        resources:
+          limits:
+            cpu: '8'
+            memory: 16Gi
+            nvidia.com/gpu: '1'
+          requests:
+            cpu: '2'
+            memory: 8Gi
+            nvidia.com/gpu: '1'
+    tolerations:
+      - effect: NoSchedule
+        key: nvidia-gpu-only
+        operator: Exists
+      - effect: NoSchedule
+        key: nvidia.com/gpu
+        operator: Exists
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: gemma-4-31b-it-nvfp4
+  namespace: model-server
+  labels:
+    opendatahub.io/dashboard: 'true'
+  annotations:
+    opendatahub.io/connection-type-protocol: uri
+    opendatahub.io/connection-type-ref: uri-v1
+    openshift.io/display-name: gemma-4-31b-it-nvfp4
+stringData:
+  URI: "oci://quay.io/redhat-ai-services/modelcar-catalog:gemma-4-31b-it-nvfp4"
+type: Opaque
+---
+apiVersion: maas.opendatahub.io/v1alpha1
+kind: MaaSModelRef
+metadata:
+  annotations:
+    openshift.io/display-name: gemma-4-31b-it-nvfp4
+  name: gemma-4-31b-it-nvfp4
+  namespace: model-server
+  ownerReferences:
+    - apiVersion: serving.kserve.io/v1alpha1
+      blockOwnerDeletion: false
+      kind: LLMInferenceService
+      name: gemma-4-31b-it-nvfp4
+      uid: ee5bba6d-0a7f-4855-8ece-68f0e346b88d
+spec:
+  modelRef:
+    kind: LLMInferenceService
+    name: gemma-4-31b-it-nvfp4
