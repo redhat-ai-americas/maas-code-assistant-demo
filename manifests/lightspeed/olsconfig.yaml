@@ -1,0 +1,17 @@
+kind: OLSConfig
+apiVersion: ols.openshift.io/v1alpha1
+metadata:
+  name: cluster
+spec:
+  llm:
+    providers:
+      - name: openshift-ai
+        type: rhoai_vllm
+        credentialsSecretRef:
+          name: openshift-ai-credentials
+        models:
+          - name: gemma-4-31b-it-nvfp4
+        url: https://maas.apps.cluster-85d49.85d49.sandbox5181.opentlc.com/model-server/gemma-4-31b-it-nvfp4/v1
+  ols:
+    defaultModel: gemma-4-31b-it-nvfp4
+    defaultProvider: openshift-ai
