@@ -72,12 +72,6 @@ metadata:
     openshift.io/display-name: gemma-4-31b-it-nvfp4
   name: gemma-4-31b-it-nvfp4
   namespace: model-server
-  ownerReferences:
-    - apiVersion: serving.kserve.io/v1alpha1
-      blockOwnerDeletion: false
-      kind: LLMInferenceService
-      name: gemma-4-31b-it-nvfp4
-      uid: ee5bba6d-0a7f-4855-8ece-68f0e346b88d
 spec:
   modelRef:
     kind: LLMInferenceService
