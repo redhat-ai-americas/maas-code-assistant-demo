@@ -62,6 +62,8 @@ gemma-4-31b-it-nvfp4
 
 ## Prompts
 
+Code Gen Prompts:
+
 Create new project:
 
 ```
@@ -80,3 +82,61 @@ Create a helm chart:
 ```
 Create a helm chart to deploy the application on openshift. Be sure to use a route instead of ingress.
 ```
+
+
+Lightspeed Prompt:
+
+```
+Check the status of the DataScienceCluster object and report any errors with recommended fixes.
+```
+
+```
+Investigate errors in the logs with the pod lightspeed-app-server in the openshift-lightspeed namespace and report any errors that you find, along with a recommended fix.
+```
+
+## Known Issues
+
+### Cluster Observability Operator
+
+The Cluster Observability Operator has known issues with OpenShift AI 3.4.2 which requires the user to deploy the 1.4.x version of Cluster Observability.  1.5.x versions will not be able to fully deploy with OpenShift AI 3.4.2.
+
+### No Usage Data for MaaS
+
+3.4.2 has a known issue that causes no data to be reported in the Observability dashboard.
+
+As a work around run the following:
+
+```
+# 1. Scale down controller
+oc scale deploy maas-controller -n redhat-ods-applications --replicas=0
+
+# 2. Delete and recreate TelemetryPolicy without broken labels
+oc delete telemetrypolicy maas-telemetry -n openshift-ingress
+oc apply -f - <<'EOF'
+apiVersion: extensions.kuadrant.io/v1alpha1
+kind: TelemetryPolicy
+metadata:
+    name: maas-telemetry
+    namespace: openshift-ingress
+labels:
+    app.kubernetes.io/part-of: maas-observability
+    maas.opendatahub.io/tenant-name: default-tenant
+    maas.opendatahub.io/tenant-namespace: models-as-a-service
+spec:
+    targetRef:
+        group: gateway.networking.k8s.io
+        kind: Gateway
+        name: maas-default-gateway
+    metrics:
+        default:
+        labels:
+            subscription: auth.identity.selected_subscription
+            user: auth.identity.userid
+            model: responseBodyJSON("/model")
+EOF
+
+# 3. Restart gateway
+oc delete pod -n openshift-ingress -l gateway.networking.k8s.io/gateway-name=maas-default-gateway
+```
+
+This issue should be resolved in 3.4.4.
