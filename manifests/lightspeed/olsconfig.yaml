@@ -11,7 +11,7 @@ spec:
           name: openshift-ai-credentials
         models:
           - name: gemma-4-31b-it-nvfp4
-        url: https://maas.apps.cluster-85d49.85d49.sandbox5181.opentlc.com/model-server/gemma-4-31b-it-nvfp4/v1
+        url: https://maas-default-gateway-data-science-gateway-class.openshift-ingress.svc.cluster.local/model-server/gemma-4-31b-it-nvfp4/v1
   ols:
     defaultModel: gemma-4-31b-it-nvfp4
     defaultProvider: openshift-ai
