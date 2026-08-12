@@ -1,7 +1,7 @@
 Run the following to generate an API key and create a secret for Lightspeed.
 
 ```
-oc create service account lightspeed -n openshift-lightspeed
+oc create serviceaccount lightspeed -n openshift-lightspeed
 SA_TOKEN=$(oc create token lightspeed -n openshift-lightspeed --duration=1h)
 MAAS_GATEWAY=$(oc get route maas-gateway-route -n openshift-ingress -o jsonpath='{.spec.host}')
 API_KEY=$(
