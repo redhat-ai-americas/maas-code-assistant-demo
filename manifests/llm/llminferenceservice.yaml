@@ -31,7 +31,7 @@ spec:
           - '--tool-call-parser gemma4'
           - '--reasoning-parser gemma4'
           - '--chat-template /opt/app-root/template/tool_chat_template_gemma4.jinja'
-        image: 'registry.redhat.io/rhaii-early-access/vllm-cuda-rhel9:3.5.0-ea.2-1782953356'
+        image: 'registry.redhat.io/rhaii/vllm-cuda-rhel9:3.5.0-1786533823'
         name: main
         resources:
           limits:
